@@ -110,52 +110,37 @@ struct Node
 };
 */
 // your task is to complete this function
-Node* solve(Node* root, int &k, int node) {
-    //base case
-    if(root == NULL)
-        return NULL;
+bool findKthAncestor(Node* root, int& k, int node, int& ancestor) {
+    // Base case
+    if (root == NULL) {
+        return false;
+    }
+    
+    // If the current node is the target node
+    if (root->data == node) {
+        return true;
+    }
+    
+    // Check in left and right subtrees
+    if (findKthAncestor(root->left, k, node, ancestor) || findKthAncestor(root->right, k, node, ancestor)) {
+        // Decrement k when returning from recursion
+        k--;
         
-    if(root->data == node) 
-    {
-        return root;
-    }
-    
-    Node* leftAns = solve(root->left, k, node);
-    Node* rightAns = solve(root->right, k, node);
-
-
-    //wapas
-    if(leftAns != NULL && rightAns == NULL) 
-    {
-        k--;
-        if(k<=0) 
-        {
-            //answer lock
-            k = INT_MAX;
-            return root;
+        // If k becomes 0, we have found the kth ancestor
+        if (k == 0) {
+            ancestor = root->data;
+            return false; // Stop further recursion
         }
-        return leftAns;
+        
+        return true;
     }
     
-    if(leftAns == NULL && rightAns != NULL) {
-        k--;
-        if(k<=0) 
-        {
-            //answer lock
-            k = INT_MAX;
-            return root;
-        }
-        return rightAns;
-    }
-    return NULL;
-    
-
+    return false;
 }
+
 int kthAncestor(Node *root, int k, int node)
 {
-    Node* ans = solve(root, k, node);
-    if(ans == NULL || ans->data == node)
-        return -1;
-    else
-        return ans->data;
+    int ancestor=-1;
+    findKthAncestor(root, k, node, ancestor);
+    return ancestor;
 }
